@@ -129,7 +129,7 @@ export default function SpendingPage() {
 
   const filteredTransactions = activeTab === 'all' ? transactions : transactions.filter(t => t.category === activeTab);
   const categoryChartData = spendingData?.by_category ? Object.entries(spendingData.by_category).map(([name, value]) => ({ name, value })) : [];
-  const monthlyChartData = spendingData?.by_month ? Object.entries(spendingData.by_month).map(([month, amount]) => ({ month: month.slice(5), amount })).slice(-6) : [];
+  const monthlyChartData = spendingData?.by_month ? Object.entries(spendingData.by_month).map(([month, amount]) => ({ month: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(month.slice(5)) - 1] || month, amount })).slice(-6) : [];
 
   const getCategoryTotal = (cat) => {
     return transactions.filter(t => t.category === cat && t.type === 'expense').reduce((sum, t) => sum + (t.amount || 0), 0);
@@ -138,24 +138,24 @@ export default function SpendingPage() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6" data-testid="spending-page">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16" data-testid="spending-page">
+        <div className="max-w-7xl mx-auto space-y-10">
           {/* Header */}
           <div>
-            <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">Spending Tracker</h1>
+            <h1 className="page-title">Spending Tracker</h1>
             <p className="text-muted-foreground mt-1 text-sm">Organize expenses by category</p>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card data-testid="total-spending-card"><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Total Spending</CardTitle><TrendingDown className="w-4 h-4 text-destructive" /></CardHeader><CardContent><div className="text-xl font-semibold font-heading">{fc(spendingData?.total_spending || 0)}</div></CardContent></Card>
-            <Card data-testid="avg-monthly-card"><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Monthly Average</CardTitle><Calendar className="w-4 h-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-xl font-semibold font-heading">{fc(spendingData?.average_monthly_spending || 0)}</div></CardContent></Card>
-            <Card data-testid="transaction-count-card"><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Transactions</CardTitle><Receipt className="w-4 h-4 text-primary" /></CardHeader><CardContent><div className="text-xl font-semibold font-heading">{spendingData?.transaction_count || 0}</div></CardContent></Card>
+            <Card data-testid="total-spending-card"><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Total Spending</CardTitle><TrendingDown className="w-4 h-4 text-destructive" /></CardHeader><CardContent><div className="money text-3xl mt-1">{fc(spendingData?.total_spending || 0)}</div></CardContent></Card>
+            <Card data-testid="avg-monthly-card"><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Monthly Average</CardTitle><Calendar className="w-4 h-4 text-muted-foreground" /></CardHeader><CardContent><div className="money text-3xl mt-1">{fc(spendingData?.average_monthly_spending || 0)}</div></CardContent></Card>
+            <Card data-testid="transaction-count-card"><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Transactions</CardTitle><Receipt className="w-4 h-4 text-primary" /></CardHeader><CardContent><div className="money text-3xl mt-1">{spendingData?.transaction_count || 0}</div></CardContent></Card>
           </div>
 
           {/* Category Tabs */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2" data-testid="category-tabs">
+            <div className="flex flex-wrap items-center gap-2" data-testid="category-tabs">
               <button onClick={() => { setActiveTab('all'); setVisibleCount(5); }}
                 className={cn("px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all",
                   activeTab === 'all' ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted"

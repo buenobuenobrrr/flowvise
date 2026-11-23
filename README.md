@@ -108,7 +108,7 @@ REACT_APP_BACKEND_URL=http://127.0.0.1:8000 pytest tests/test_mvp_auth_core_flow
 | Resend email | Codes logged / returned as `demo_code` |
 | Tink Open Banking | `/tink/link` → 503; use Demo bank connect |
 | AI Advisor (`OPENAI_API_KEY`) | `/advisor/advice` → 503; UI shows unavailable banner |
-| Google OAuth | Still points at Emergent auth host — use email/password locally |
+| Google / Apple sign-in | Buttons on the sign-in page. They finish only when `GOOGLE_CLIENT_ID` and `APPLE_CLIENT_ID` are set on the API. Email and password always work. |
 
 ## Config notes
 

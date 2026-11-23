@@ -39,7 +39,7 @@ function StatusIcon({ status }) {
     case 'caution':
       return <TrendingUp className="w-5 h-5 text-amber-400" />;
     default:
-      return <CheckCircle className="w-5 h-5 text-green-500" />;
+      return <CheckCircle className="w-5 h-5 text-cyan-700" />;
   }
 }
 
@@ -137,20 +137,20 @@ export default function BudgetAlertsPage() {
       case 'exceeded': return '[&>div]:bg-red-500';
       case 'warning': return '[&>div]:bg-amber-500';
       case 'caution': return '[&>div]:bg-amber-300';
-      default: return '[&>div]:bg-green-500';
+      default: return '[&>div]:bg-[hsl(var(--positive))]';
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6" data-testid="budget-alerts-page">
-        <div className="max-w-6xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16" data-testid="budget-alerts-page">
+        <div className="max-w-6xl mx-auto space-y-10">
 
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">
+              <h1 className="page-title">
                 {t('budget_alerts_title')}
               </h1>
               <p className="text-muted-foreground mt-1">
@@ -222,7 +222,7 @@ export default function BudgetAlertsPage() {
                           <Badge variant="outline" className={cn(
                             a.status === 'exceeded' && 'border-red-300 text-red-600',
                             a.status === 'warning' && 'border-amber-300 text-amber-600',
-                            a.status === 'safe' && 'border-green-300 text-green-600'
+                            a.status === 'safe' && 'border-cyan-300 text-cyan-800'
                           )}>
                             {a.status}
                           </Badge>
@@ -328,7 +328,7 @@ export default function BudgetAlertsPage() {
                           <p className="font-medium">{r.description}</p>
                           <Badge variant="secondary">{r.category}</Badge>
                           <Badge variant="outline" className="capitalize">{r.frequency}</Badge>
-                          {r.confirmed && <Badge className="bg-green-100 text-green-700">Confirmed</Badge>}
+                          {r.confirmed && <Badge className="bg-cyan-50 text-cyan-800">Confirmed</Badge>}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">
                           {fc(r.average_amount)} · {r.occurrences} occurrences · Every ~{r.avg_interval_days} days

@@ -1,4 +1,5 @@
 import "@/App.css";
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
@@ -23,12 +24,6 @@ import PortfolioPage from "./pages/PortfolioPage";
 // Protected Route Component
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
-  const location = useLocation();
-
-  // Skip auth check if user data was passed from AuthCallback
-  if (location.state?.user) {
-    return children;
-  }
 
   if (loading) {
     return (
@@ -65,6 +60,14 @@ function PublicRoute({ children }) {
 }
 
 // App Router Component
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function AppRouter() {
   const location = useLocation();
 
@@ -74,6 +77,8 @@ function AppRouter() {
   }
 
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       {/* Public Routes */}
       <Route
@@ -163,6 +168,7 @@ function AppRouter() {
       <Route path="/" element={<Navigate to="/auth" replace />} />
       <Route path="*" element={<Navigate to="/auth" replace />} />
     </Routes>
+    </>
   );
 }
 
@@ -175,7 +181,7 @@ function App() {
             <CurrencyProvider>
               <AuthProvider>
                 <AppRouter />
-                <Toaster position="top-right" richColors />
+                <Toaster position="bottom-right" />
               </AuthProvider>
             </CurrencyProvider>
           </LanguageProvider>

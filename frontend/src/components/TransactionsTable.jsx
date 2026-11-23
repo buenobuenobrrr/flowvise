@@ -40,8 +40,8 @@ export function TransactionsTable({ transactions, onDelete, fc }) {
               <TableCell><Badge variant="secondary">{txn.category}</Badge></TableCell>
               <TableCell><Badge variant="outline" className="capitalize">{txn.source}</Badge></TableCell>
               <TableCell className={cn(
-                "text-right font-medium",
-                txn.type === 'income' ? 'text-green-600' : 'text-foreground'
+                "text-right money text-sm",
+                txn.type === 'income' ? 'money-positive' : 'text-foreground'
               )}>
                 {txn.type === 'income' ? '+' : '-'}{fc(txn.amount)}
               </TableCell>

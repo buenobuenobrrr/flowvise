@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone, timedelta
-import httpx
 import bcrypt
 import jwt
 import statistics
@@ -671,24 +670,6 @@ def _set_session_cookie(response: JSONResponse, token: str) -> JSONResponse:
     return response
 
 
-async def _find_or_create_google_user(email: str, name: str, picture: str) -> str:
-    """Find existing user or create a new one for Google OAuth. Returns user_id."""
-    user = await db.users.find_one({"email": email}, {"_id": 0})
-    if not user:
-        user_id = f"user_{uuid.uuid4().hex[:12]}"
-        await db.users.insert_one({
-            "user_id": user_id, "email": email, "name": name,
-            "picture": picture, "created_at": datetime.now(timezone.utc).isoformat()
-        })
-        await _create_default_profile(user_id)
-    else:
-        user_id = user["user_id"]
-        await db.users.update_one(
-            {"user_id": user_id}, {"$set": {"name": name, "picture": picture}}
-        )
-    return user_id
-
-
 def _build_mock_accounts(user_id: str, institution_name: str) -> list:
     """Build mock bank accounts for Plaid demo.
 
@@ -888,7 +869,7 @@ async def forgot_password(request: Request):
     if not user:
         return {"message": "If this email is registered, a reset code has been sent.", "demo_code": None}
     if not user.get("password_hash"):
-        raise HTTPException(status_code=400, detail="This account uses Google login. Password reset is not available.")
+        raise HTTPException(status_code=400, detail="This account uses Google or Apple. Password reset is not available.")
     
     code = f"{secrets.randbelow(900000) + 100000}"
     await db.reset_codes.delete_many({"email": email})
@@ -951,7 +932,7 @@ async def login(user_data: UserLogin, request: Request):
             await db.account_lockouts.delete_one({"email": user_data.email})
 
     if not user.get("password_hash"):
-        raise HTTPException(status_code=401, detail="Please login with Google")
+        raise HTTPException(status_code=401, detail="This account uses Google or Apple. Use that button to sign in.")
 
     if not verify_password(user_data.password, user["password_hash"]):
         # Track failed attempts for lockout
@@ -994,38 +975,139 @@ async def login(user_data: UserLogin, request: Request):
     })
     return _set_session_cookie(response, token)
 
+class OAuthIdToken(BaseModel):
+    id_token: str
+    name: Optional[str] = None
+
+
+def _auth_success_response(user: dict) -> JSONResponse:
+    token = create_jwt_token(user["user_id"], user["email"])
+    response = JSONResponse(content={
+        "access_token": token, "token_type": "bearer",
+        "user": {"user_id": user["user_id"], "email": user["email"],
+                 "name": user["name"], "picture": user.get("picture")}
+    })
+    return _set_session_cookie(response, token)
+
+
+def _verify_google_id_token(token: str, client_id: str) -> dict:
+    try:
+        from google.oauth2 import id_token as google_id_token
+        from google.auth.transport import requests as google_requests
+        info = google_id_token.verify_oauth2_token(token, google_requests.Request(), client_id)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Google sign-in was rejected")
+    issuer = info.get("iss")
+    if issuer not in ("accounts.google.com", "https://accounts.google.com"):
+        raise HTTPException(status_code=401, detail="Google sign-in was rejected")
+    if not info.get("email") or not info.get("email_verified"):
+        raise HTTPException(status_code=401, detail="Google account email is not verified")
+    return info
+
+
+_apple_jwks = None
+
+
+def _verify_apple_id_token(token: str, client_id: str) -> dict:
+    global _apple_jwks
+    try:
+        from jwt import PyJWKClient
+        if _apple_jwks is None:
+            _apple_jwks = PyJWKClient("https://appleid.apple.com/auth/keys")
+        signing_key = _apple_jwks.get_signing_key_from_jwt(token)
+        return jwt.decode(
+            token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience=client_id,
+            issuer="https://appleid.apple.com",
+        )
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=401, detail="Apple sign-in was rejected")
+
+
+async def _upsert_oauth_user(email: str, name: str, picture: Optional[str], provider: str) -> dict:
+    email = email.strip().lower()
+    if not email:
+        raise HTTPException(status_code=401, detail="The provider did not share an email")
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if not user:
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+        user = {
+            "user_id": user_id,
+            "email": email,
+            "name": name or email.split("@")[0],
+            "picture": picture,
+            "password_hash": None,
+            "email_verified": True,
+            "auth_provider": provider,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.users.insert_one(user)
+        user.pop("_id", None)
+        await _create_default_profile(user_id)
+        await audit_log(user_id, "user_registered", {"email": email, "provider": provider})
+        return user
+    updates = {"email_verified": True, "auth_provider": provider}
+    if name and (not user.get("name") or user.get("name") == user.get("email")):
+        updates["name"] = name
+    if picture:
+        updates["picture"] = picture
+    await db.users.update_one({"user_id": user["user_id"]}, {"$set": updates})
+    user.update(updates)
+    await audit_log(user["user_id"], "login_success", {"email": email, "provider": provider})
+    return user
+
+
+@api_router.get("/auth/providers")
+async def auth_providers():
+    """Public client ids for the sign-in buttons. Empty when that provider is not set up."""
+    google_id = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+    apple_id = os.environ.get("APPLE_CLIENT_ID", "").strip()
+    return {
+        "google_client_id": google_id or None,
+        "apple_client_id": apple_id or None,
+    }
+
+
+@api_router.post("/auth/google")
+async def google_login(body: OAuthIdToken, request: Request):
+    client_id = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+    if not client_id:
+        raise HTTPException(status_code=503, detail="Google sign-in is not configured on this server")
+    client_ip = _get_client_ip(request)
+    rate_limiter.check(f"oauth:{client_ip}", LOGIN_MAX_ATTEMPTS * 2, AUTH_RATE_WINDOW)
+    rate_limiter.record(f"oauth:{client_ip}")
+    info = _verify_google_id_token(body.id_token, client_id)
+    user = await _upsert_oauth_user(
+        info["email"],
+        body.name or info.get("name") or "",
+        info.get("picture"),
+        "google",
+    )
+    return _auth_success_response(user)
+
+
+@api_router.post("/auth/apple")
+async def apple_login(body: OAuthIdToken, request: Request):
+    client_id = os.environ.get("APPLE_CLIENT_ID", "").strip()
+    if not client_id:
+        raise HTTPException(status_code=503, detail="Apple sign-in is not configured on this server")
+    client_ip = _get_client_ip(request)
+    rate_limiter.check(f"oauth:{client_ip}", LOGIN_MAX_ATTEMPTS * 2, AUTH_RATE_WINDOW)
+    rate_limiter.record(f"oauth:{client_ip}")
+    info = _verify_apple_id_token(body.id_token, client_id)
+    email = info.get("email") or ""
+    user = await _upsert_oauth_user(email, body.name or "", None, "apple")
+    return _auth_success_response(user)
+
+
 @api_router.post("/auth/google/session")
 async def process_google_session(request: Request):
-    """Process Google OAuth session_id from Emergent Auth"""
-    body = await request.json()
-    session_id = body.get("session_id")
-    if not session_id:
-        raise HTTPException(status_code=400, detail="session_id required")
-    
-    async with httpx.AsyncClient() as http_client:
-        resp = await http_client.get(
-            "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
-            headers={"X-Session-ID": session_id}
-        )
-    if resp.status_code != 200:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    auth_data = resp.json()
-    email, name, picture = auth_data["email"], auth_data["name"], auth_data.get("picture")
-    session_token = auth_data["session_token"]
-    
-    user_id = await _find_or_create_google_user(email, name, picture)
-    
-    await db.user_sessions.insert_one({
-        "user_id": user_id, "session_token": session_token,
-        "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
-        "created_at": datetime.now(timezone.utc).isoformat()
-    })
-    
-    response = JSONResponse(content={
-        "user": {"user_id": user_id, "email": email, "name": name, "picture": picture}
-    })
-    return _set_session_cookie(response, session_token)
+    """Old hosted-auth callback. Sign in with the Google or Apple button, or with email."""
+    raise HTTPException(status_code=410, detail="Use the Google or Apple button, or email and password.")
 
 @api_router.get("/auth/me", response_model=UserResponse)
 async def get_me(current_user: dict = Depends(get_current_user)):

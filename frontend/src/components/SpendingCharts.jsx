@@ -7,7 +7,7 @@ import {
   CHART_TOOLTIP_ITEM_STYLE, CHART_COLORS, CHART_GRID_STROKE, CHART_AXIS_STROKE
 } from '../lib/chartTheme';
 
-const BAR_RADIUS = [6, 6, 0, 0];
+const BAR_RADIUS = [8, 8, 0, 0];
 
 export function SpendingCategoryChart({ data, fc }) {
   return (
@@ -25,9 +25,9 @@ export function SpendingCategoryChart({ data, fc }) {
                   data={data}
                   cx="50%"
                   cy="50%"
-                  innerRadius={55}
-                  outerRadius={90}
-                  paddingAngle={2}
+                  innerRadius={68}
+                  outerRadius={96}
+                  paddingAngle={1.5}
                   dataKey="value"
                   stroke="hsl(var(--card))"
                   strokeWidth={2}
@@ -77,7 +77,7 @@ export function MonthlySpendingChart({ data, fc, symbol }) {
           {data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data} margin={{ top: 10, right: 16, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+                <CartesianGrid vertical={false} stroke={CHART_GRID_STROKE} />
                 <XAxis
                   dataKey="month"
                   stroke={CHART_AXIS_STROKE}
@@ -100,7 +100,7 @@ export function MonthlySpendingChart({ data, fc, symbol }) {
                   formatter={(value) => [fc(value), 'Spending']}
                   cursor={{ fill: CHART_AXIS_STROKE, fillOpacity: 0.08 }}
                 />
-                <Bar dataKey="amount" fill="hsl(var(--primary))" radius={BAR_RADIUS} />
+                <Bar dataKey="amount" fill="hsl(var(--primary))" fillOpacity={0.85} radius={BAR_RADIUS} maxBarSize={36} />
               </BarChart>
             </ResponsiveContainer>
           ) : (

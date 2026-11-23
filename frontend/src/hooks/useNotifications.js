@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const NOTIFICATION_ICON = 'https://customer-assets.emergentagent.com/job_money-brain-ai/artifacts/fodh5r8x_image.png';
+const NOTIFICATION_ICON = '/favicon.svg';
 const NOTIFICATION_DURATION_MS = 8000;
 
 export function useNotifications() {

@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 class MoneyBrainAPITester:
-    def __init__(self, base_url="https://money-brain-ai.preview.emergentagent.com/api"):
+    def __init__(self, base_url="http://127.0.0.1:8000/api"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0

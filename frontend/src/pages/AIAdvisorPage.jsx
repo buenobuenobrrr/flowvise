@@ -209,11 +209,11 @@ export default function AIAdvisorPage() {
         </DialogContent>
       </Dialog>
 
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6" data-testid="ai-advisor-page">
-        <div className="max-w-5xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16" data-testid="ai-advisor-page">
+        <div className="max-w-5xl mx-auto space-y-10">
           {/* Header */}
           <div>
-            <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight flex items-center gap-3">
+            <h1 className="page-title flex items-center gap-3">
               <Bot className="w-8 h-8 text-primary" />
               AI Financial Advisor
             </h1>
@@ -301,20 +301,20 @@ export default function AIAdvisorPage() {
                   </CardHeader>
                   <CardContent>
                     {/* Financial Snapshot */}
-                    <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
+                    <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-muted/40 rounded-2xl">
                       <div>
                         <p className="text-sm text-muted-foreground">Income</p>
-                        <p className="font-semibold">{fc(advice.financial_snapshot?.income || 0)}</p>
+                        <p className="money text-xl mt-1">{fc(advice.financial_snapshot?.income || 0)}</p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Safe to Invest</p>
-                        <p className="font-semibold">{fc(advice.financial_snapshot?.safe_to_invest || 0)}</p>
+                        <p className="money money-positive text-xl mt-1">{fc(advice.financial_snapshot?.safe_to_invest || 0)}</p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Status</p>
                         <Badge className={cn(
-                          advice.financial_snapshot?.status === 'excellent' && 'bg-green-100 text-green-700',
-                          advice.financial_snapshot?.status === 'good' && 'bg-emerald-100 text-emerald-700',
+                          advice.financial_snapshot?.status === 'excellent' && 'bg-cyan-50 text-cyan-800',
+                          advice.financial_snapshot?.status === 'good' && 'bg-cyan-50 text-cyan-800',
                           advice.financial_snapshot?.status === 'moderate' && 'bg-amber-100 text-amber-700',
                           advice.financial_snapshot?.status === 'not_recommended' && 'bg-red-100 text-red-700'
                         )}>

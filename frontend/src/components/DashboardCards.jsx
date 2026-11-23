@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 function SviGauge({ svi }) {
   const pct = Math.min(svi * 100, 100);
   const label = svi < 0.15 ? 'Stable' : svi < 0.35 ? 'Moderate' : svi < 0.6 ? 'Volatile' : 'Erratic';
-  const color = svi < 0.15 ? 'text-green-600' : svi < 0.35 ? 'text-amber-500' : 'text-destructive';
+  const color = svi < 0.15 ? 'money-positive' : svi < 0.35 ? 'text-amber-500' : 'text-destructive';
   return (
     <div data-testid="svi-gauge">
       <div className="flex justify-between text-sm mb-1">
@@ -25,7 +25,7 @@ function SviGauge({ svi }) {
       </div>
       <div className="h-2 bg-muted rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${pct}%`, background: svi < 0.15 ? 'hsl(150,50%,40%)' : svi < 0.35 ? 'hsl(40,90%,50%)' : 'hsl(0,70%,50%)' }} />
+          style={{ width: `${pct}%`, background: svi < 0.15 ? 'hsl(var(--positive))' : svi < 0.35 ? 'hsl(40,90%,50%)' : 'hsl(0,70%,50%)' }} />
       </div>
     </div>
   );
@@ -39,14 +39,14 @@ export function StatsCards({ totalBalance, accounts, spendingData, readinessData
   const safeEngine = readinessData?.safe_to_invest_engine;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
       <Card className="card-hover" data-testid="total-balance-card">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">{t('total_balance')}</CardTitle>
           <Wallet className="w-5 h-5 text-primary" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-semibold font-heading">{fc(totalBalance)}</div>
+          <div className="money text-3xl sm:text-4xl mt-1">{fc(totalBalance)}</div>
           <p className="text-xs text-muted-foreground mt-1">{accounts.length} account{accounts.length !== 1 ? 's' : ''} connected</p>
         </CardContent>
       </Card>
@@ -57,26 +57,26 @@ export function StatsCards({ totalBalance, accounts, spendingData, readinessData
           <TrendingDown className="w-5 h-5 text-destructive" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-semibold font-heading">{fc(spendingData?.average_monthly_spending || 0)}</div>
+          <div className="money text-3xl sm:text-4xl mt-1">{fc(spendingData?.average_monthly_spending || 0)}</div>
           <p className="text-xs text-muted-foreground mt-1">Based on {spendingData?.transaction_count || 0} transactions</p>
         </CardContent>
       </Card>
 
-      <Card className={cn("card-hover", safeEngine?.frozen && "border-blue-400/50")} data-testid="safe-to-invest-card">
+      <Card className={cn("card-hover", safeEngine?.frozen && "border-primary/30")} data-testid="safe-to-invest-card">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">{t('safe_to_invest')}</CardTitle>
-          {safeEngine?.frozen ? <Snowflake className="w-5 h-5 text-blue-500" /> : <PiggyBank className="w-5 h-5 text-accent" />}
+          {safeEngine?.frozen ? <Snowflake className="w-5 h-5 text-primary" /> : <PiggyBank className="w-5 h-5 text-primary" />}
         </CardHeader>
         <CardContent>
           <Popover>
             <PopoverTrigger asChild>
               <button className="w-full text-left group cursor-pointer" data-testid="safe-to-invest-trigger">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-semibold font-heading">{fc(readinessData?.safe_to_invest || 0)}</span>
+                  <span className="money money-positive text-3xl sm:text-4xl">{fc(readinessData?.safe_to_invest || 0)}</span>
                   <Info className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 {safeEngine?.frozen ? (
-                  <p className="text-xs text-blue-600 mt-1" data-testid="cooling-off-notice">Cooling off — spending spike detected</p>
+                  <p className="text-xs text-primary mt-1" data-testid="cooling-off-notice">Cooling off — spending spike detected</p>
                 ) : (
                   <div className="flex items-center gap-2 mt-1">
                     <Badge className={cn(getStatusColor(readinessData?.status))}>{readinessData?.status?.replace('_', ' ') || 'Unknown'}</Badge>
@@ -124,7 +124,7 @@ export function StatsCards({ totalBalance, accounts, spendingData, readinessData
                   </div>
                 </div>
                 {safeEngine?.frozen && (
-                  <div className="p-2 bg-blue-50 rounded text-xs text-blue-700 mt-2">
+                  <div className="p-2 bg-primary/10 rounded-lg text-xs text-primary mt-2">
                     {safeEngine.frozen_reason}
                   </div>
                 )}
@@ -141,10 +141,10 @@ export function StatsCards({ totalBalance, accounts, spendingData, readinessData
       <Card className="card-hover" data-testid="svi-card">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">Volatility Index</CardTitle>
-          <Activity className={cn("w-5 h-5", svi > 0.35 ? "text-destructive" : "text-accent")} />
+          <Activity className={cn("w-5 h-5", svi > 0.35 ? "text-destructive" : "text-primary")} />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-semibold font-heading">{svi.toFixed(2)}</div>
+          <div className="money text-3xl sm:text-4xl mt-1">{svi.toFixed(2)}</div>
           <p className="text-xs text-muted-foreground mt-1">
             {sviData?.months_analyzed || 0} months analyzed
           </p>
@@ -219,15 +219,15 @@ export function InvestmentReadinessCard({ readinessData, fc, t }) {
 
         {/* Spike Warning */}
         {spike?.spike_detected && (
-          <div className={cn("p-4 rounded-lg flex items-start gap-3",
-            spike.cooling_off ? "bg-blue-50 border border-blue-200" : "bg-amber-50 border border-amber-200"
+          <div className={cn("p-4 rounded-xl flex items-start gap-3",
+            spike.cooling_off ? "bg-primary/5 border border-primary/20" : "bg-amber-50 border border-amber-200"
           )} data-testid="spike-warning">
-            {spike.cooling_off ? <Snowflake className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" /> : <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />}
+            {spike.cooling_off ? <Snowflake className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" /> : <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />}
             <div className="text-sm">
-              <p className={cn("font-medium", spike.cooling_off ? "text-blue-800" : "text-amber-800")}>
+              <p className={cn("font-medium", spike.cooling_off ? "text-primary" : "text-amber-800")}>
                 {spike.cooling_off ? 'Investment Freeze Active' : 'Spending Spike Detected'}
               </p>
-              <p className={cn("mt-1", spike.cooling_off ? "text-blue-700" : "text-amber-700")}>
+              <p className={cn("mt-1", spike.cooling_off ? "text-foreground/80" : "text-amber-700")}>
                 Recent spending is {spike.spike_pct}% above your average ({fc(spike.recent_spend)} vs {fc(spike.avg_prior_spend)}).
                 {spike.cooling_off && ` Safe to Invest is frozen for a ${14}-day cooling-off period to ensure this isn't a new trend.`}
               </p>

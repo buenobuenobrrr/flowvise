@@ -20,7 +20,7 @@ import requests
 from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://money-brain-ai.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://127.0.0.1:8000").rstrip("/")
 API = f"{BASE_URL}/api"
 
 EXISTING_EMAIL = "test@example.com"

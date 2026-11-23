@@ -89,7 +89,7 @@ export function InvestmentPortfolioTabs({ investmentOptions, fc }) {
                   <span className="font-medium">{Math.round(portfolio.risk_probability * 100)}% probability of loss</span>
                 </div>
                 <Progress value={portfolio.risk_probability * 100} className={cn("h-3",
-                  key === 'conservative' && "[&>div]:bg-green-500",
+                  key === 'conservative' && "[&>div]:bg-[hsl(var(--positive))]",
                   key === 'moderate' && "[&>div]:bg-amber-500",
                   key === 'aggressive' && "[&>div]:bg-red-500"
                 )} />
@@ -142,9 +142,9 @@ export function BankSafeOptions({ options, fc }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {options.map((option) => (
             <div key={option.type} className="p-4 border rounded-lg">
-              <div className="flex items-center gap-2 mb-2"><CheckCircle className="w-5 h-5 text-green-500" /><h4 className="font-medium text-sm">{option.type}</h4></div>
+              <div className="flex items-center gap-2 mb-2"><CheckCircle className="w-5 h-5 text-cyan-700" /><h4 className="font-medium text-sm">{option.type}</h4></div>
               <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{option.description}</p>
-              <div className="flex justify-between text-sm mb-3"><span className="text-muted-foreground">Typical APY</span><span className="font-medium text-green-600">{option.typical_apy}</span></div>
+              <div className="flex justify-between text-sm mb-3"><span className="text-muted-foreground">Typical APY</span><span className="font-medium text-cyan-800">{option.typical_apy}</span></div>
               {option.recommended_banks && (
                 <div className="mb-3"><p className="text-xs text-muted-foreground mb-1.5">Recommended:</p><div className="flex flex-wrap gap-1">{option.recommended_banks.map((bank) => <Badge key={bank} variant="secondary" className="text-xs">{bank}</Badge>)}</div></div>
               )}

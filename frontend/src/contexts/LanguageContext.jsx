@@ -9,6 +9,7 @@ const SUPPORTED_LANGUAGES = [
   { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
   { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
   { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'pl', label: 'Polski', flag: '🇵🇱' },
 ];
 
 function detectBrowserLanguage() {
@@ -26,6 +27,7 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem('app_language', language);
+    document.documentElement.lang = language;
   }, [language]);
 
   const t = useCallback((key) => {

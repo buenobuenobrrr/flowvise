@@ -78,18 +78,18 @@ export default function SettingsPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-background"><Sidebar /><main className="lg:ml-60 pt-16 lg:pt-0 p-6"><div className="max-w-4xl mx-auto animate-pulse space-y-6"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 bg-muted rounded-xl" /></div></main></div>
+    <div className="min-h-screen bg-background"><Sidebar /><main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16"><div className="max-w-4xl mx-auto animate-pulse space-y-6"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 bg-muted rounded-xl" /></div></main></div>
   );
 
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6" data-testid="settings-page">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16" data-testid="settings-page">
+        <div className="max-w-4xl mx-auto space-y-10">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">{t('settings_title')}</h1>
+              <h1 className="page-title">{t('settings_title')}</h1>
               <p className="text-muted-foreground mt-1 text-sm">{t('settings_subtitle')}</p>
             </div>
             <Button onClick={handleSave} disabled={saving} size="sm" data-testid="save-settings-button">

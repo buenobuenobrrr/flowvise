@@ -49,8 +49,8 @@ const PortfolioPie = ({ allocation, label }) => {
               <PieChart>
                 <Pie
                   data={data} cx="50%" cy="50%"
-                  innerRadius={50} outerRadius={85}
-                  paddingAngle={2} dataKey="value"
+                  innerRadius={58} outerRadius={84}
+                  paddingAngle={1.5} dataKey="value"
                   stroke="hsl(var(--card))" strokeWidth={2}
                 >
                   {data.map((entry, i) => (
@@ -157,8 +157,8 @@ export default function PortfolioPage() {
     return (
       <div className="min-h-screen bg-background">
         <Sidebar />
-        <main className="lg:ml-60 pt-16 lg:pt-0 p-6">
-          <div className="max-w-6xl mx-auto space-y-6">
+        <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16">
+          <div className="max-w-6xl mx-auto space-y-10">
             <Skeleton className="h-10 w-72" />
             <Skeleton className="h-44 rounded-xl" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -176,11 +176,11 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-background" data-testid="portfolio-page">
       <Sidebar />
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6">
-        <div className="max-w-6xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16">
+        <div className="max-w-6xl mx-auto space-y-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">Portfolio Rebalancing</h1>
+              <h1 className="page-title">Portfolio Rebalancing</h1>
               <p className="text-muted-foreground mt-1">Pulled from your connected bank accounts and compared against your target risk tier.</p>
             </div>
             <Button variant="outline" onClick={() => runAutoDetect()} disabled={refreshing} data-testid="refresh-portfolio-button">
@@ -225,7 +225,7 @@ export default function PortfolioPage() {
                   <div className="flex items-center gap-3">
                     {result.needs_rebalance
                       ? <AlertTriangle className="w-5 h-5 text-amber-500" />
-                      : <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+                      : <CheckCircle2 className="w-5 h-5 text-primary" />}
                     <CardTitle className="font-heading text-lg">
                       {result.needs_rebalance ? 'Rebalancing recommended' : 'Looking good'}
                     </CardTitle>
@@ -235,15 +235,15 @@ export default function PortfolioPage() {
                 <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">Total portfolio</p>
-                    <p className="text-2xl font-heading mt-1">{fc(result.total_value)}</p>
+                    <p className="money text-3xl mt-1">{fc(result.total_value)}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Max drift</p>
-                    <p className="text-2xl font-heading mt-1">{result.max_drift_pct}%</p>
+                    <p className="money text-3xl mt-1">{result.max_drift_pct}%</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Accounts used</p>
-                    <p className="text-2xl font-heading mt-1">{result.accounts_used} <span className="text-base text-muted-foreground">of {result.accounts_seen}</span></p>
+                    <p className="money text-3xl mt-1">{result.accounts_used} <span className="text-base font-medium text-muted-foreground tracking-normal">of {result.accounts_seen}</span></p>
                   </div>
                 </CardContent>
               </Card>
@@ -284,7 +284,7 @@ export default function PortfolioPage() {
                         <div key={m.asset_class} className="flex items-center justify-between py-3 gap-4" data-testid={`move-${m.asset_class}`}>
                           <div className="flex items-center gap-3">
                             <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                              m.action === 'buy' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+                              m.action === 'buy' ? 'bg-cyan-50 text-cyan-800' : 'bg-rose-50 text-rose-700'
                             }`}>
                               {m.action === 'buy' ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                             </div>
@@ -295,7 +295,7 @@ export default function PortfolioPage() {
                               </p>
                             </div>
                           </div>
-                          <div className={`text-right font-heading text-base ${m.action === 'buy' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                          <div className={`text-right money text-base ${m.action === 'buy' ? 'money-positive' : 'text-rose-700'}`}>
                             {m.action === 'buy' ? '+' : ''}{fc(m.delta)}
                           </div>
                         </div>

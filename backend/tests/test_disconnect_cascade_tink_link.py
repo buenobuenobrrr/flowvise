@@ -21,7 +21,7 @@ import pytest
 import requests
 from urllib.parse import urlparse, parse_qs
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://money-brain-ai.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://127.0.0.1:8000").rstrip("/")
 EMAIL = "test@example.com"
 PASSWORD = "Test123!"
 
@@ -61,7 +61,7 @@ def user_id(session):
 class TestTinkLinkDelegatedAuth:
     def test_tink_link_url_has_delegated_auth_params(self, session):
         r = session.post(f"{BASE_URL}/api/tink/link",
-                         json={"redirect_uri": "https://money-brain-ai.preview.emergentagent.com/tink/callback"},
+                         json={"redirect_uri": "http://127.0.0.1:3000/dashboard/accounts"},
                          timeout=60)
         # If Tink sandbox is reachable we expect 200; if upstream Tink is failing we get 502.
         if r.status_code == 502:

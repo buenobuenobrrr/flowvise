@@ -26,7 +26,7 @@ import pytest
 import requests
 from urllib.parse import urlparse, parse_qs
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://money-brain-ai.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://127.0.0.1:8000").rstrip("/")
 EMAIL = "test@example.com"
 PASSWORD = "Test123!"
 
@@ -64,7 +64,7 @@ def user_id(session):
 def _post_tink_link(session):
     return session.post(
         f"{BASE_URL}/api/tink/link",
-        json={"redirect_uri": "https://money-brain-ai.preview.emergentagent.com/tink/callback"},
+        json={"redirect_uri": "http://127.0.0.1:3000/dashboard/accounts"},
         timeout=60,
     )
 

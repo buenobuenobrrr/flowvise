@@ -84,10 +84,10 @@ export function IncomeCard({ profile, setProfile, fc, t, getAuthHeaders }) {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Auto-detected income */}
-        <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg space-y-2" data-testid="auto-income-section">
+        <div className="p-4 bg-cyan-50 dark:bg-cyan-950/30 rounded-lg space-y-2" data-testid="auto-income-section">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-green-700 dark:text-green-400">Auto-detected Monthly Income</span>
-            <span className="text-lg font-semibold text-green-700 dark:text-green-400">
+            <span className="text-sm font-medium text-cyan-800 dark:text-cyan-300">Auto-detected Monthly Income</span>
+            <span className="text-lg font-semibold text-cyan-800 dark:text-cyan-300">
               {loadingIncome ? '...' : fc(autoIncome)}
             </span>
           </div>
@@ -102,7 +102,7 @@ export function IncomeCard({ profile, setProfile, fc, t, getAuthHeaders }) {
             </div>
           )}
           {incomeData?.auto_detected?.months_analyzed > 0 && (
-            <p className="text-xs text-green-600 dark:text-green-500">Based on {incomeData.auto_detected.months_analyzed} months of bank data</p>
+            <p className="text-xs text-cyan-800 dark:text-cyan-400">Based on {incomeData.auto_detected.months_analyzed} months of bank data</p>
           )}
         </div>
 
@@ -247,7 +247,7 @@ export function NotificationsCard({ notifSupported, notifEnabled, requestPermiss
             <p className="text-xs text-muted-foreground mt-0.5">{t('push_desc')}</p>
           </div>
           {notifEnabled ? (
-            <Badge className="bg-green-100 text-green-700">{t('notifications_enabled')}</Badge>
+            <Badge className="bg-cyan-50 text-cyan-800">{t('notifications_enabled')}</Badge>
           ) : (
             <Button size="sm" onClick={async () => { const r = await requestPermission(); if (r === 'granted') toast.success(t('notifications_enabled')); }}
               data-testid="enable-notifications-button">{t('enable_notifications')}</Button>
@@ -321,8 +321,8 @@ export function AutoDetectCard({ getAuthHeaders, fc, onApplied }) {
         {detected && (
           <div className="space-y-3">
             {detected.detected_income.length > 0 && (
-              <div className="p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
-                <p className="text-sm font-medium text-green-700 dark:text-green-400 mb-2">Detected Income</p>
+              <div className="p-3 bg-cyan-50 dark:bg-cyan-950/30 rounded-lg">
+                <p className="text-sm font-medium text-cyan-800 dark:text-cyan-300 mb-2">Detected Income</p>
                 {detected.detected_income.map((inc, i) => (
                   <div key={`${inc.description}-${inc.average_amount}`} className="flex justify-between text-sm" data-testid={`detected-income-${i}`}>
                     <span>{inc.description || inc.category}</span>
