@@ -41,6 +41,7 @@ export default function AIAdvisorPage() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [expandedHistory, setExpandedHistory] = useState(null);
+  const [advisorUnavailable, setAdvisorUnavailable] = useState(null);
 
   const fetchHistory = useCallback(async () => {
     try {
@@ -65,6 +66,7 @@ export default function AIAdvisorPage() {
   const handleGetAdvice = async () => {
     setLoading(true);
     setAdvice(null);
+    setAdvisorUnavailable(null);
 
     try {
       const response = await fetch(`${API}/advisor/advice`, {
@@ -77,16 +79,29 @@ export default function AIAdvisorPage() {
         })
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get advice');
+      const text = await response.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; } catch (_) { /* non-json */ }
+
+      if (response.status === 503) {
+        const detail = typeof data.detail === 'string'
+          ? data.detail
+          : 'AI advisor is unavailable. Set OPENAI_API_KEY on the backend to enable.';
+        setAdvisorUnavailable(detail);
+        toast.error(detail);
+        return;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        const detail = typeof data.detail === 'string' ? data.detail : 'Failed to get advice';
+        throw new Error(detail);
+      }
+
       setAdvice(data);
       setQuestion('');
       await fetchHistory();
     } catch (err) {
-      toast.error('Failed to get AI advice. Please try again.');
+      toast.error(err.message || 'Failed to get AI advice. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -209,6 +224,26 @@ export default function AIAdvisorPage() {
 
           {disclaimerAccepted && (
             <>
+              {advisorUnavailable && (
+                <Card
+                  className="border-amber-200 bg-amber-50"
+                  data-testid="advisor-unavailable-banner"
+                >
+                  <CardContent className="py-4 flex items-start gap-3 text-sm text-amber-800">
+                    <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0 text-amber-600" />
+                    <div>
+                      <p className="font-medium">AI Advisor unavailable</p>
+                      <p className="mt-1 text-amber-700">{advisorUnavailable}</p>
+                      <p className="mt-2 text-amber-700">
+                        Configure <code className="text-xs">OPENAI_API_KEY</code> in the
+                        backend environment (optional <code className="text-xs">OPENAI_BASE_URL</code>,{' '}
+                        <code className="text-xs">OPENAI_MODEL</code>) and retry.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Input Card */}
               <Card data-testid="advice-input-card">
                 <CardHeader>
