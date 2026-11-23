@@ -141,11 +141,6 @@ export function AuthProvider({ children }) {
     return data;
   }, []);
 
-  const loginWithGoogle = useCallback(() => {
-    const redirectUrl = window.location.origin + '/dashboard';
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-  }, []);
-
   const processGoogleCallback = useCallback(async (sessionId) => {
     const response = await fetch(`${API}/auth/google/session`, {
       method: 'POST',
@@ -185,12 +180,11 @@ export function AuthProvider({ children }) {
     register,
     verifyEmail,
     resendCode,
-    loginWithGoogle,
     processGoogleCallback,
     logout,
     getAuthHeaders,
     checkAuth
-  }), [user, loading, login, register, verifyEmail, resendCode, loginWithGoogle, processGoogleCallback, logout, getAuthHeaders, checkAuth]);
+  }), [user, loading, login, register, verifyEmail, resendCode, processGoogleCallback, logout, getAuthHeaders, checkAuth]);
 
   return (
     <AuthContext.Provider value={value}>

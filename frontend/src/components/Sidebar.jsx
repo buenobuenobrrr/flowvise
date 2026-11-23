@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { LanguagePicker } from './LanguagePicker';
+import { FlowMark } from './FlowMark';
 import { useState } from 'react';
 import {
   LayoutDashboard, Building2, CreditCard, Bell, TrendingUp, LineChart,
@@ -19,8 +20,6 @@ const NAV_ITEMS = [
   { to: '/dashboard/accounts', icon: Building2, label: 'nav_bank_accounts' },
   { to: '/dashboard/settings', icon: Settings, label: 'nav_settings' },
 ];
-
-const LOGO = 'https://customer-assets.emergentagent.com/job_money-brain-ai/artifacts/qw0mtrax_image_2026-04-27_214300149.png';
 
 export function Sidebar() {
   const { user, logout } = useAuth();
@@ -48,7 +47,7 @@ export function Sidebar() {
         data-testid="sidebar"
       >
         <div className="flex items-center gap-3 px-4 sm:px-8 h-14">
-          <img src={LOGO} alt="FlowVise" className="w-7 h-7 rounded-md" />
+          <FlowMark className="w-7 h-7" />
           <span className="font-heading text-xl leading-none text-foreground">FlowVise</span>
           <div className="ml-auto flex items-center gap-2">
             <LanguagePicker compact />

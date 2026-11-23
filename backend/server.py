@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone, timedelta
-import httpx
 import bcrypt
 import jwt
 import statistics
@@ -671,24 +670,6 @@ def _set_session_cookie(response: JSONResponse, token: str) -> JSONResponse:
     return response
 
 
-async def _find_or_create_google_user(email: str, name: str, picture: str) -> str:
-    """Find existing user or create a new one for Google OAuth. Returns user_id."""
-    user = await db.users.find_one({"email": email}, {"_id": 0})
-    if not user:
-        user_id = f"user_{uuid.uuid4().hex[:12]}"
-        await db.users.insert_one({
-            "user_id": user_id, "email": email, "name": name,
-            "picture": picture, "created_at": datetime.now(timezone.utc).isoformat()
-        })
-        await _create_default_profile(user_id)
-    else:
-        user_id = user["user_id"]
-        await db.users.update_one(
-            {"user_id": user_id}, {"$set": {"name": name, "picture": picture}}
-        )
-    return user_id
-
-
 def _build_mock_accounts(user_id: str, institution_name: str) -> list:
     """Build mock bank accounts for Plaid demo.
 
@@ -996,36 +977,8 @@ async def login(user_data: UserLogin, request: Request):
 
 @api_router.post("/auth/google/session")
 async def process_google_session(request: Request):
-    """Process Google OAuth session_id from Emergent Auth"""
-    body = await request.json()
-    session_id = body.get("session_id")
-    if not session_id:
-        raise HTTPException(status_code=400, detail="session_id required")
-    
-    async with httpx.AsyncClient() as http_client:
-        resp = await http_client.get(
-            "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
-            headers={"X-Session-ID": session_id}
-        )
-    if resp.status_code != 200:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    auth_data = resp.json()
-    email, name, picture = auth_data["email"], auth_data["name"], auth_data.get("picture")
-    session_token = auth_data["session_token"]
-    
-    user_id = await _find_or_create_google_user(email, name, picture)
-    
-    await db.user_sessions.insert_one({
-        "user_id": user_id, "session_token": session_token,
-        "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
-        "created_at": datetime.now(timezone.utc).isoformat()
-    })
-    
-    response = JSONResponse(content={
-        "user": {"user_id": user_id, "email": email, "name": name, "picture": picture}
-    })
-    return _set_session_cookie(response, session_token)
+    """External OAuth is not used. Sign in with email and password on this machine."""
+    raise HTTPException(status_code=410, detail="Sign in with email and password.")
 
 @api_router.get("/auth/me", response_model=UserResponse)
 async def get_me(current_user: dict = Depends(get_current_user)):

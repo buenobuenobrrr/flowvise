@@ -13,7 +13,7 @@ import requests
 
 BASE_URL = os.environ.get(
     "REACT_APP_BACKEND_URL",
-    "https://money-brain-ai.preview.emergentagent.com",
+    "http://127.0.0.1:8000",
 ).rstrip("/")
 EMAIL = "test@example.com"
 PASSWORD = "Test123!"
