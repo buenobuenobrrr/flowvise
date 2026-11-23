@@ -24,12 +24,6 @@ import PortfolioPage from "./pages/PortfolioPage";
 // Protected Route Component
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
-  const location = useLocation();
-
-  // Skip auth check if user data was passed from AuthCallback
-  if (location.state?.user) {
-    return children;
-  }
 
   if (loading) {
     return (

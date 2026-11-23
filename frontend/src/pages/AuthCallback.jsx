@@ -24,19 +24,18 @@ export default function AuthCallback() {
           return;
         }
 
-        // Exchange session_id for user data — retry once on failure
-        let user;
+        // Exchange session_id for a real session — retry once on failure.
         try {
-          user = await processGoogleCallback(sessionId);
+          await processGoogleCallback(sessionId);
         } catch (firstErr) {
           // Race condition with cookie propagation — retry once after a short wait.
           if (process.env.NODE_ENV !== 'production') console.debug('Google callback retry:', firstErr);
           await new Promise(r => setTimeout(r, 1000));
-          user = await processGoogleCallback(sessionId);
+          await processGoogleCallback(sessionId);
         }
 
         window.history.replaceState(null, '', window.location.pathname);
-        navigate('/dashboard', { state: { user }, replace: true });
+        navigate('/dashboard', { replace: true });
       } catch (err) {
         navigate('/auth');
       }

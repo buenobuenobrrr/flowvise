@@ -19,7 +19,6 @@ import { useCurrency } from '../contexts/CurrencyContext';
 import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-const APP_ORIGIN = process.env.REACT_APP_BACKEND_URL;
 
 const MOCK_INSTITUTIONS = [
   { id: 'ing', name: 'ING Bank', logo: '\u{1F3E6}' },
@@ -114,7 +113,7 @@ export default function BankAccountsPage() {
     setLinking(true);
     setLinkStep('connecting');
     try {
-      const redirectUri = `${APP_ORIGIN}/dashboard/accounts`;
+      const redirectUri = `${window.location.origin}/dashboard/accounts`;
       const res = await fetch(`${API}/tink/link`, {
         method: 'POST', credentials: 'include', headers: getAuthHeaders(),
         body: JSON.stringify({ redirect_uri: redirectUri })
