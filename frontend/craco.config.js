@@ -1,5 +1,6 @@
 // craco.config.js
 const path = require("path");
+const webpack = require("webpack");
 require("dotenv").config();
 
 // Environment variable overrides
@@ -51,6 +52,10 @@ let webpackConfig = {
       if (config.enableHealthCheck && healthPluginInstance) {
         webpackConfig.plugins.push(healthPluginInstance);
       }
+      webpackConfig.plugins.push(new webpack.DefinePlugin({
+        "process.env.GOOGLE_CLIENT_ID": JSON.stringify(process.env.GOOGLE_CLIENT_ID || ""),
+        "process.env.APPLE_CLIENT_ID": JSON.stringify(process.env.APPLE_CLIENT_ID || ""),
+      }));
       return webpackConfig;
     },
   },

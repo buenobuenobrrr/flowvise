@@ -4,6 +4,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const BUILD_GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
+const BUILD_APPLE_CLIENT_ID = process.env.APPLE_CLIENT_ID || "";
 const GOOGLE_SCRIPT = 'https://accounts.google.com/gsi/client';
 const APPLE_SCRIPT = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
 
@@ -35,7 +37,10 @@ export function SocialSignIn({ disabled, onError, onSuccess }) {
   const { loginWithIdToken } = useAuth();
   const { t } = useLanguage();
   const googleHost = useRef(null);
-  const [providers, setProviders] = useState({ google_client_id: null, apple_client_id: null });
+  const [providers, setProviders] = useState({
+    google_client_id: BUILD_GOOGLE_CLIENT_ID || null,
+    apple_client_id: BUILD_APPLE_CLIENT_ID || null,
+  });
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -44,8 +49,8 @@ export function SocialSignIn({ disabled, onError, onSuccess }) {
       .then((res) => (res.ok ? res.json() : {}))
       .then((data) => {
         if (!cancelled) setProviders({
-          google_client_id: data.google_client_id || null,
-          apple_client_id: data.apple_client_id || null,
+          google_client_id: data.google_client_id || BUILD_GOOGLE_CLIENT_ID || null,
+          apple_client_id: data.apple_client_id || BUILD_APPLE_CLIENT_ID || null,
         });
       })
       .catch(() => {});
