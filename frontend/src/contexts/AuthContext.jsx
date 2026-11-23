@@ -141,6 +141,23 @@ export function AuthProvider({ children }) {
     return data;
   }, []);
 
+  const loginWithIdToken = useCallback(async (path, idToken, name) => {
+    const response = await fetch(`${API}/${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ id_token: idToken, name: name || undefined }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const detail = data.detail;
+      throw new Error(typeof detail === 'string' ? detail : 'Sign-in failed');
+    }
+    persistToken(data.access_token || null);
+    setUser(data.user);
+    return data.user;
+  }, []);
+
   const processGoogleCallback = useCallback(async (sessionId) => {
     const response = await fetch(`${API}/auth/google/session`, {
       method: 'POST',
@@ -180,11 +197,12 @@ export function AuthProvider({ children }) {
     register,
     verifyEmail,
     resendCode,
+    loginWithIdToken,
     processGoogleCallback,
     logout,
     getAuthHeaders,
     checkAuth
-  }), [user, loading, login, register, verifyEmail, resendCode, processGoogleCallback, logout, getAuthHeaders, checkAuth]);
+  }), [user, loading, login, register, verifyEmail, resendCode, loginWithIdToken, processGoogleCallback, logout, getAuthHeaders, checkAuth]);
 
   return (
     <AuthContext.Provider value={value}>

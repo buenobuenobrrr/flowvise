@@ -9,6 +9,7 @@ import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { FlowMark } from '../components/FlowMark';
+import { SocialSignIn } from '../components/SocialSignIn';
 import { TrendingUp, Shield, ArrowLeft, Mail, Loader2, KeyRound, Sparkles } from 'lucide-react';
 import { CodeInput, AuthError, DemoCodeBanner } from '../components/AuthComponents';
 
@@ -362,6 +363,11 @@ export default function AuthPage() {
               </TabsContent>
 
             </Tabs>
+            <SocialSignIn
+              disabled={isLoading}
+              onError={setError}
+              onSuccess={() => navigate('/dashboard')}
+            />
           </div>
         </div>
       </div>
