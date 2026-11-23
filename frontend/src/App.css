@@ -1,0 +1,162 @@
+/* Global app styles */
+
+.App {
+    min-height: 100vh;
+}
+
+/* Auth page background */
+.auth-bg {
+    background-image: url('https://images.unsplash.com/photo-1766774458167-3982180ac182?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwzfHxwbGFudCUyMGdyb3d0aCUyMHN1bmxpZ2h0fGVufDB8fHx8MTc3NjE1ODA1OHww&ixlib=rb-4.1.0&q=85');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Dashboard layout */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 72px;
+}
+
+.main-content {
+    flex: 1;
+    overflow-x: hidden;
+}
+
+/* Card hover effects */
+.card-hover {
+    transition: all 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Button hover lift */
+.btn-lift {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-lift:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Risk level indicators */
+.risk-low {
+    color: hsl(150, 30%, 30%);
+    background-color: hsl(150, 30%, 90%);
+}
+
+.risk-medium {
+    color: hsl(45, 40%, 35%);
+    background-color: hsl(45, 40%, 90%);
+}
+
+.risk-high {
+    color: hsl(15, 45%, 45%);
+    background-color: hsl(15, 45%, 90%);
+}
+
+/* Chart container */
+.chart-container {
+    width: 100%;
+    height: 300px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -260px;
+        z-index: 50;
+        height: 100vh;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .main-content {
+        width: 100%;
+    }
+}
+
+/* Loading states */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        hsl(var(--muted)) 25%,
+        hsl(var(--muted-foreground) / 0.1) 50%,
+        hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Disclaimer banner */
+.disclaimer-banner {
+    background: linear-gradient(135deg, hsl(45, 40%, 95%) 0%, hsl(60, 20%, 95%) 100%);
+    border-left: 4px solid hsl(45, 60%, 50%);
+}
+
+/* Status badges */
+.status-excellent {
+    background-color: hsl(150, 40%, 90%);
+    color: hsl(150, 40%, 25%);
+}
+
+.status-good {
+    background-color: hsl(150, 30%, 90%);
+    color: hsl(150, 30%, 30%);
+}
+
+.status-moderate {
+    background-color: hsl(45, 40%, 90%);
+    color: hsl(45, 40%, 30%);
+}
+
+.status-not-recommended {
+    background-color: hsl(15, 45%, 90%);
+    color: hsl(15, 45%, 35%);
+}
+
+/* Investment option cards */
+.investment-card {
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.investment-card:hover {
+    border-color: hsl(var(--primary));
+    background-color: hsl(var(--primary) / 0.02);
+}
+
+/* Tooltip styles */
+.tooltip-content {
+    max-width: 300px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}

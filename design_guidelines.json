@@ -1,0 +1,113 @@
+{
+  "theme": "dark",
+  "archetype": "Swiss & High-Contrast (Premium Tech Variant)",
+  "typography": {
+    "fonts": {
+      "heading": "Cabinet Grotesk",
+      "body": "Manrope",
+      "mono": "JetBrains Mono"
+    },
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl tracking-tight font-medium text-zinc-100",
+      "h2": "text-2xl sm:text-3xl tracking-tight font-medium text-zinc-100",
+      "h3": "text-xl sm:text-2xl font-medium text-zinc-100",
+      "h4": "text-lg font-medium text-zinc-200",
+      "body": "text-base text-zinc-400 leading-relaxed",
+      "small": "text-sm text-zinc-500",
+      "overline": "text-xs font-bold uppercase tracking-[0.2em] text-zinc-500"
+    }
+  },
+  "colors": {
+    "dark": {
+      "background": "#09090B",
+      "surface": "#18181B",
+      "surface_hover": "#27272A",
+      "border": "#27272A",
+      "primary": "#3B82F6",
+      "primary_foreground": "#FFFFFF",
+      "text_main": "#F4F4F5",
+      "text_muted": "#A1A1AA",
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "danger": "#EF4444"
+    },
+    "light": {
+      "background": "#FAFAFA",
+      "surface": "#FFFFFF",
+      "surface_hover": "#F4F4F5",
+      "border": "#E4E4E7",
+      "primary": "#2563EB",
+      "primary_foreground": "#FFFFFF",
+      "text_main": "#18181B",
+      "text_muted": "#71717A",
+      "success": "#059669",
+      "warning": "#D97706",
+      "danger": "#DC2626"
+    }
+  },
+  "spacing_and_layout": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "grid_strategy": "Control Room Grid (Dashboard) - grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
+    "card_padding": "p-6",
+    "section_spacing": "py-12 md:py-16"
+  },
+  "surfaces_and_micro_themes": {
+    "cards": {
+      "base": "bg-zinc-900 border border-zinc-800 rounded-xl shadow-sm transition-all duration-200",
+      "hover": "hover:border-zinc-700 hover:shadow-md hover:-translate-y-0.5",
+      "active": "active:scale-[0.98]"
+    },
+    "sidebar": {
+      "base": "bg-zinc-950 border-r border-zinc-800",
+      "item": "flex items-center gap-3 px-3 py-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50 transition-colors",
+      "item_active": "bg-blue-500/10 text-blue-500 font-medium"
+    },
+    "inputs": {
+      "base": "bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-zinc-600"
+    },
+    "buttons": {
+      "primary": "bg-blue-600 text-white rounded-lg px-4 py-2 font-medium hover:bg-blue-500 transition-colors shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950",
+      "secondary": "bg-zinc-800 text-zinc-100 rounded-lg px-4 py-2 font-medium hover:bg-zinc-700 transition-colors shadow-sm focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 focus:ring-offset-zinc-950"
+    }
+  },
+  "motion_and_interactions": {
+    "hover_states": "All interactive elements must have visible hover states, typically lightening the background and slightly translating Y.",
+    "transitions": "Use `transition-all duration-200 ease-out` for most micro-interactions.",
+    "chart_animations": "Charts should have subtle entrance animations (e.g., stroke drawing or fading in up)."
+  },
+  "components_and_libraries": {
+    "ui_components": "shadcn/ui (Cards, Dialogs, Dropdowns, Tables, Tabs, Slider, Switch, Popover)",
+    "icons": "lucide-react (Use strokeWidth={1.5} for a premium, delicate look)",
+    "charts": "recharts (Customized with theme colors, no background grids, minimalist tooltips)",
+    "animations": "framer-motion for page transitions and complex micro-interactions"
+  },
+  "media": {
+    "image_urls": {
+      "auth_background": {
+        "url": "https://images.unsplash.com/photo-1649524858012-803e972ca07e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwxfHxkYXJrJTIwYWJzdHJhY3QlMjBnZW9tZXRyeSUyMGFyY2hpdGVjdHVyZXxlbnwwfHx8fDE3NzczMTY2MjN8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Black and white wavy lines abstract geometry, perfect for a subtle, premium auth page background"
+      },
+      "empty_state_texture": {
+        "url": "https://images.unsplash.com/photo-1674958026986-8bdd866ac98c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwzfHxkYXJrJTIwY2xlYW4lMjBVSSUyMHBhdHRlcm4lMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3NzMxNjYyM3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Dark clean UI pattern background, useful for empty states or subtle card backgrounds"
+      },
+      "abstract_architectural_texture": {
+        "url": "https://images.pexels.com/photos/7230895/pexels-photo-7230895.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Dark abstract geometric architectural lines, ideal for hero sections or deep background textures."
+      }
+    }
+  },
+  "instructions_to_main_agent": [
+    "Use 'Cabinet Grotesk' for headings and 'Manrope' for body text. Add `<link href=\"https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700,400,900&display=swap\" rel=\"stylesheet\">` and `<link href=\"https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">` to the root HTML file.",
+    "Implement a dark mode toggle in the Settings page, but default the app to dark mode.",
+    "Do NOT use 'Inter' for headings. Cabinet Grotesk is mandatory for a premium fintech feel.",
+    "Build a clean sidebar on the left. The sidebar should have minimal icons and a very muted active state.",
+    "The Dashboard must follow the 'Control Room Grid' protocol: dense, functional, and card-based. Use `gap-6` between widgets.",
+    "Cards must have subtle borders (`border-zinc-800` in dark mode) rather than heavy drop shadows.",
+    "For the 'Safe to Invest' popover, use a sleek shadcn/ui popover with a smooth framer-motion entrance.",
+    "The Spending by Category chart must use a minimalist Donut chart (Recharts) with the primary, success, and warning colors.",
+    "Ensure all interactive elements have a `data-testid` attribute (e.g., `data-testid=\"login-submit-button\"`).",
+    "Never use pure black or pure white; always use the tinted zinc palette for a cohesive, premium look.",
+    "Configure Tailwind with these exact font families so utility classes like `font-sans` apply Manrope and you can use a custom class for Cabinet Grotesk."
+  ]
+}
