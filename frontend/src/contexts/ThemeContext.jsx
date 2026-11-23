@@ -5,7 +5,7 @@ const ThemeContext = createContext(null);
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     const stored = localStorage.getItem('flowvise-theme');
-    return stored || 'dark';
+    return stored || 'light';
   });
 
   useEffect(() => {

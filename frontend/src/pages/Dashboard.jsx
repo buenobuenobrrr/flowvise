@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell
 } from 'recharts';
 import { Sparkles } from 'lucide-react';
@@ -20,8 +20,6 @@ import {
 } from '../lib/chartTheme';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-
-const LINE_DOT_STYLE = { fill: '#3b82f6', strokeWidth: 2 };
 
 export default function Dashboard() {
   const { user, getAuthHeaders } = useAuth();
@@ -79,7 +77,7 @@ export default function Dashboard() {
   // Prepare chart data
   const monthlyChartData = spendingData?.by_month
     ? Object.entries(spendingData.by_month).map(([month, amount]) => ({
-        month: month.slice(5), // Get MM part
+        month: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(month.slice(5)) - 1] || month,
         spending: amount
       })).slice(-6)
     : [];
@@ -97,8 +95,8 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-background">
         <Sidebar />
-        <main className="lg:ml-60 pt-16 lg:pt-0 p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16">
+          <div className="max-w-7xl mx-auto space-y-10">
             <Skeleton className="h-8 w-48" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map(i => (
@@ -115,12 +113,12 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background" data-testid="dashboard">
       <Sidebar />
 
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16">
+        <div className="max-w-7xl mx-auto space-y-10">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">
+              <h1 className="page-title">
                 {t('welcome_back')}, {user?.name?.split(' ')[0]}
               </h1>
               <p className="text-muted-foreground mt-1">
@@ -140,7 +138,7 @@ export default function Dashboard() {
             readinessData={readinessData} fc={fc} t={t} getStatusColor={getStatusColor} />
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Spending Trend */}
             <Card data-testid="spending-chart-card">
               <CardHeader>
@@ -151,8 +149,14 @@ export default function Dashboard() {
                 <div className="h-[300px]">
                   {monthlyChartData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={monthlyChartData} margin={{ top: 10, right: 16, bottom: 0, left: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+                      <AreaChart data={monthlyChartData} margin={{ top: 10, right: 16, bottom: 0, left: 0 }}>
+                        <defs>
+                          <linearGradient id="spendFill" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.22} />
+                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.02} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid vertical={false} stroke={CHART_GRID_STROKE} />
                         <XAxis
                           dataKey="month"
                           stroke={CHART_AXIS_STROKE}
@@ -173,16 +177,18 @@ export default function Dashboard() {
                           labelStyle={CHART_TOOLTIP_LABEL_STYLE}
                           itemStyle={CHART_TOOLTIP_ITEM_STYLE}
                           formatter={(value) => [fc(value), 'Spending']}
-                          cursor={{ stroke: CHART_AXIS_STROKE, strokeOpacity: 0.3 }}
+                          cursor={{ stroke: CHART_AXIS_STROKE, strokeOpacity: 0.35 }}
                         />
-                        <Line
+                        <Area
                           type="monotone"
                           dataKey="spending"
                           stroke="hsl(var(--primary))"
-                          strokeWidth={2}
-                          dot={LINE_DOT_STYLE}
+                          strokeWidth={1.75}
+                          fill="url(#spendFill)"
+                          dot={false}
+                          activeDot={{ r: 4, strokeWidth: 0, fill: 'hsl(var(--primary))' }}
                         />
-                      </LineChart>
+                      </AreaChart>
                     </ResponsiveContainer>
                   ) : (
                     <div className="h-full flex items-center justify-center text-muted-foreground">
@@ -208,9 +214,9 @@ export default function Dashboard() {
                           data={categoryChartData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={55}
-                          outerRadius={90}
-                          paddingAngle={2}
+                          innerRadius={68}
+                          outerRadius={96}
+                          paddingAngle={1.5}
                           dataKey="value"
                           stroke="hsl(var(--card))"
                           strokeWidth={2}

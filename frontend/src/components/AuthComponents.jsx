@@ -51,7 +51,7 @@ export function CodeInput({ digits, onChange, onKeyDown, inputRefs, testIdPrefix
 export function AuthError({ message }) {
   if (!message) return null;
   return (
-    <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+    <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-xl">
       <AlertCircle className="w-4 h-4 flex-shrink-0" />
       {message}
     </div>
@@ -61,7 +61,7 @@ export function AuthError({ message }) {
 export function DemoCodeBanner({ code, testId = 'demo-code-display' }) {
   if (!code) return null;
   return (
-    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-center">
+    <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-center">
       <p className="text-xs text-amber-600 mb-1">Demo: In production, this code would be emailed</p>
       <p className="text-2xl font-mono font-bold text-amber-800 tracking-[0.3em]" data-testid={testId}>
         {code}

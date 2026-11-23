@@ -5,9 +5,13 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Manrope', 'system-ui', 'sans-serif'],
-                heading: ['Cabinet Grotesk', 'Manrope', 'system-ui', 'sans-serif'],
+                sans: ['Outfit', 'system-ui', 'sans-serif'],
+                heading: ['Fraunces', 'Georgia', 'serif'],
                 mono: ['JetBrains Mono', 'monospace'],
+            },
+            boxShadow: {
+                card: '0 1px 2px rgba(40, 36, 30, 0.04), 0 12px 32px -16px rgba(40, 36, 30, 0.12)',
+                'card-hover': '0 1px 2px rgba(40, 36, 30, 0.05), 0 18px 40px -18px rgba(40, 36, 30, 0.16)',
             },
             borderRadius: {
                 lg: 'var(--radius)',

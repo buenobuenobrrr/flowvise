@@ -198,11 +198,11 @@ export default function BankAccountsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6" data-testid="bank-accounts-page">
-        <div className="max-w-5xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16" data-testid="bank-accounts-page">
+        <div className="max-w-5xl mx-auto space-y-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">Bank Accounts</h1>
+              <h1 className="page-title">Bank Accounts</h1>
               <p className="text-muted-foreground mt-1">Connect your bank accounts to track spending automatically</p>
             </div>
 
@@ -302,7 +302,7 @@ export default function BankAccountsPage() {
 
                 {linkStep === 'success' && (
                   <div className="py-8 text-center space-y-4">
-                    <CheckCircle className="w-12 h-12 mx-auto text-green-500" />
+                    <CheckCircle className="w-12 h-12 mx-auto text-cyan-700" />
                     <p className="font-medium">Successfully connected!</p>
                   </div>
                 )}
@@ -317,7 +317,7 @@ export default function BankAccountsPage() {
               <CardDescription>Combined balance across all accounts</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-semibold font-heading">{fc(totalBalance)}</div>
+              <div className="money text-4xl">{fc(totalBalance)}</div>
             </CardContent>
           </Card>
 

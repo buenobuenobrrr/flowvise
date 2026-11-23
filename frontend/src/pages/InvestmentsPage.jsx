@@ -49,13 +49,13 @@ export default function InvestmentsPage() {
   };
 
   const getStatusBadge = (status) => {
-    const cfg = { excellent: 'bg-green-100 text-green-700', good: 'bg-emerald-100 text-emerald-700', moderate: 'bg-amber-100 text-amber-700', not_recommended: 'bg-red-100 text-red-700' };
+    const cfg = { excellent: 'bg-cyan-50 text-cyan-800', good: 'bg-cyan-50 text-cyan-800', moderate: 'bg-amber-100 text-amber-700', not_recommended: 'bg-red-100 text-red-700' };
     const label = { excellent: 'Excellent', good: 'Good', moderate: 'Moderate', not_recommended: 'Not Recommended' };
     return <Badge className={cfg[status] || cfg.moderate}>{label[status] || 'Moderate'}</Badge>;
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-background"><Sidebar /><main className="lg:ml-60 pt-16 lg:pt-0 p-6"><div className="max-w-6xl mx-auto animate-pulse space-y-6"><div className="h-8 w-64 bg-muted rounded" /><div className="h-48 bg-muted rounded-lg" /></div></main></div>
+    <div className="min-h-screen bg-background"><Sidebar /><main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16"><div className="max-w-6xl mx-auto animate-pulse space-y-6"><div className="h-8 w-64 bg-muted rounded" /><div className="h-48 bg-muted rounded-lg" /></div></main></div>
   );
 
   return (
@@ -91,10 +91,10 @@ export default function InvestmentsPage() {
         </DialogContent>
       </Dialog>
 
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6" data-testid="investments-page">
-        <div className="max-w-6xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16" data-testid="investments-page">
+        <div className="max-w-6xl mx-auto space-y-10">
           <div>
-            <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">Investment Options</h1>
+            <h1 className="page-title">Investment Options</h1>
             <p className="text-muted-foreground mt-1">Explore European investment opportunities</p>
           </div>
 
@@ -108,7 +108,7 @@ export default function InvestmentsPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div><p className="text-sm text-muted-foreground mb-1">Safe to Invest</p><p className="text-2xl font-semibold font-heading">{fc(readiness?.safe_to_invest || 0)}</p></div>
+                <div><p className="text-sm text-muted-foreground mb-1">Safe to Invest</p><p className="money money-positive text-3xl">{fc(readiness?.safe_to_invest || 0)}</p></div>
                 <div><p className="text-sm text-muted-foreground mb-1">Confidence Level</p><div className="flex items-center gap-3"><Progress value={(readiness?.confidence_level || 0) * 100} className="flex-1" /><span className="font-medium">{Math.round((readiness?.confidence_level || 0) * 100)}%</span></div></div>
                 <div><p className="text-sm text-muted-foreground mb-1">Risk Tolerance</p><Badge className={getRiskColor(readiness?.risk_tolerance)} variant="secondary">{readiness?.risk_tolerance || 'Moderate'}</Badge></div>
                 <div><p className="text-sm text-muted-foreground mb-1">Volatility Ratio</p><p className="text-lg font-medium">{readiness?.volatility_ratio || 0}</p></div>

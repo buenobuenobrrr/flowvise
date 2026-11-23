@@ -20,6 +20,8 @@ const NAV_ITEMS = [
   { to: '/dashboard/settings', icon: Settings, label: 'nav_settings' },
 ];
 
+const LOGO = 'https://customer-assets.emergentagent.com/job_money-brain-ai/artifacts/qw0mtrax_image_2026-04-27_214300149.png';
+
 export function Sidebar() {
   const { user, logout } = useAuth();
   const { t } = useLanguage();
@@ -32,92 +34,95 @@ export function Sidebar() {
     navigate('/auth');
   };
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-border/50">
-        <img src="https://customer-assets.emergentagent.com/job_money-brain-ai/artifacts/qw0mtrax_image_2026-04-27_214300149.png" alt="FlowVise" className="w-7 h-7 rounded" />
-        {!collapsed && <span className="font-heading text-lg font-semibold tracking-tight">FlowVise</span>}
-        <div className="ml-auto"><LanguagePicker /></div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto" data-testid="sidebar-nav">
-        {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
-          <NavLink key={to} to={to} end={to === '/dashboard'}
-            onClick={() => setMobileOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                isActive
-                  ? 'bg-primary/10 text-primary font-medium'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-              }`
-            }
-            data-testid={`nav-${label}`}
-          >
-            <Icon className="w-[18px] h-[18px]" strokeWidth={1.5} />
-            {!collapsed && <span>{t(label)}</span>}
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* User Section */}
-      <div className="px-3 py-4 border-t border-border/50">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-medium text-primary">
-            {user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?'}
-          </div>
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.name || 'User'}</p>
-              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-            </div>
-          )}
-        </div>
-        <button onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2 mt-1 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-          data-testid="logout-button">
-          <LogOut className="w-[18px] h-[18px]" strokeWidth={1.5} />
-          {!collapsed && <span>{t('sign_out')}</span>}
-        </button>
-      </div>
-
-      {/* Collapse toggle (desktop only) */}
-      <button onClick={() => setCollapsed(!collapsed)}
-        className="hidden lg:flex items-center justify-center py-3 border-t border-border/50 text-muted-foreground hover:text-foreground transition-colors"
-        data-testid="collapse-sidebar">
-        <ChevronLeft className={`w-4 h-4 transition-transform ${collapsed ? 'rotate-180' : ''}`} />
-      </button>
-    </div>
-  );
+  const linkClass = ({ isActive }) =>
+    `flex items-center gap-2 px-3 py-2.5 text-sm whitespace-nowrap border-b-2 transition-colors ${
+      isActive
+        ? 'border-primary text-foreground font-medium'
+        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+    }`;
 
   return (
     <>
-      {/* Mobile trigger */}
-      <button onClick={() => setMobileOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-card border border-border shadow-sm"
-        data-testid="mobile-menu-trigger">
-        <Menu className="w-5 h-5" />
-      </button>
+      <header
+        className="sticky top-0 z-40 bg-card border-b border-border"
+        data-testid="sidebar"
+      >
+        <div className="flex items-center gap-3 px-4 sm:px-8 h-14">
+          <img src={LOGO} alt="FlowVise" className="w-7 h-7 rounded-md" />
+          <span className="font-heading text-xl leading-none text-foreground">FlowVise</span>
+          <div className="ml-auto flex items-center gap-2">
+            <LanguagePicker compact />
+            <div className="hidden md:block text-right min-w-0 max-w-[180px]">
+              <p className="text-sm font-medium truncate">{user?.name || 'User'}</p>
+              <p className="text-[11px] text-muted-foreground truncate">{user?.email}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+              data-testid="logout-button"
+            >
+              <LogOut className="w-4 h-4" strokeWidth={1.5} />
+              <span>{t('sign_out')}</span>
+            </button>
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="hidden lg:inline-flex items-center justify-center p-1.5 text-muted-foreground hover:text-foreground"
+              data-testid="collapse-sidebar"
+              aria-label="Toggle navigation"
+            >
+              <ChevronLeft className={`w-4 h-4 transition-transform ${collapsed ? '-rotate-90' : 'rotate-90'}`} />
+            </button>
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="lg:hidden p-2 rounded-md border border-border"
+              data-testid="mobile-menu-trigger"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+        {!collapsed && (
+          <nav className="hidden lg:flex items-center gap-0.5 px-4 sm:px-6 overflow-x-auto" data-testid="sidebar-nav">
+            {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+              <NavLink key={to} to={to} end={to === '/dashboard'} className={linkClass} data-testid={`nav-${label}`}>
+                <Icon className="w-4 h-4" strokeWidth={1.5} />
+                <span>{t(label)}</span>
+              </NavLink>
+            ))}
+          </nav>
+        )}
+      </header>
 
-      {/* Mobile overlay */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border shadow-xl animate-slide-up">
+          <div className="absolute inset-0 bg-[hsl(216_28%_10%/0.4)]" onClick={() => setMobileOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-72 bg-card border-r border-border shadow-card">
             <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 p-1 text-muted-foreground">
               <X className="w-5 h-5" />
             </button>
-            <SidebarContent />
+            <div className="px-5 pt-6 pb-3 font-heading text-xl">FlowVise</div>
+            <nav className="px-3 py-2 space-y-0.5" data-testid="sidebar-nav-mobile">
+              {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+                <NavLink key={to} to={to} end={to === '/dashboard'}
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2.5 text-sm border-l-2 ${
+                      isActive ? 'border-primary text-foreground font-medium' : 'border-transparent text-muted-foreground'
+                    }`
+                  }
+                >
+                  <Icon className="w-4 h-4" strokeWidth={1.5} />
+                  <span>{t(label)}</span>
+                </NavLink>
+              ))}
+            </nav>
+            <button onClick={handleLogout} className="flex items-center gap-3 w-full px-6 py-3 mt-2 text-sm text-muted-foreground">
+              <LogOut className="w-4 h-4" strokeWidth={1.5} />
+              <span>{t('sign_out')}</span>
+            </button>
           </aside>
         </div>
       )}
-
-      {/* Desktop sidebar */}
-      <aside className={`hidden lg:block fixed left-0 top-0 bottom-0 bg-card border-r border-border z-40 transition-all duration-200 ${collapsed ? 'w-16' : 'w-60'}`}
-        data-testid="sidebar">
-        <SidebarContent />
-      </aside>
     </>
   );
 }

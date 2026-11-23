@@ -108,12 +108,12 @@ export default function PortfolioSimulatorPage() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="lg:ml-60 pt-16 lg:pt-0 p-6" data-testid="portfolio-simulator-page">
-        <div className="max-w-6xl mx-auto space-y-6">
+      <main className="px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16" data-testid="portfolio-simulator-page">
+        <div className="max-w-6xl mx-auto space-y-10">
 
           {/* Header */}
           <div>
-            <h1 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight flex items-center gap-3">
+            <h1 className="page-title flex items-center gap-3">
               <Calculator className="w-8 h-8 text-primary" />
               Portfolio Simulator
             </h1>
@@ -259,21 +259,21 @@ export default function PortfolioSimulatorPage() {
               <CardContent className="space-y-6">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="p-4 bg-muted/40 rounded-2xl">
                     <p className="text-xs text-muted-foreground">Final Balance</p>
-                    <p className="text-xl font-semibold font-heading text-primary">{fc(simpleResult.summary.final_balance)}</p>
+                    <p className="money text-2xl text-primary mt-1">{fc(simpleResult.summary.final_balance)}</p>
                   </div>
-                  <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="p-4 bg-muted/40 rounded-2xl">
                     <p className="text-xs text-muted-foreground">Total Invested</p>
-                    <p className="text-xl font-semibold font-heading">{fc(simpleResult.summary.total_invested)}</p>
+                    <p className="money text-2xl mt-1">{fc(simpleResult.summary.total_invested)}</p>
                   </div>
-                  <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="p-4 bg-muted/40 rounded-2xl">
                     <p className="text-xs text-muted-foreground">Total Gains</p>
-                    <p className="text-xl font-semibold font-heading text-green-600">{fc(simpleResult.summary.total_gains)}</p>
+                    <p className="money money-positive text-2xl mt-1">{fc(simpleResult.summary.total_gains)}</p>
                   </div>
-                  <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="p-4 bg-muted/40 rounded-2xl">
                     <p className="text-xs text-muted-foreground">Total Return</p>
-                    <p className="text-xl font-semibold font-heading">{simpleResult.summary.return_pct}%</p>
+                    <p className="money text-2xl mt-1">{simpleResult.summary.return_pct}%</p>
                   </div>
                 </div>
 
@@ -281,8 +281,8 @@ export default function PortfolioSimulatorPage() {
                 <div className="h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={simpleResult.timeline}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
-                      <XAxis dataKey="year" stroke={CHART_AXIS_STROKE} tick={CHART_AXIS_TICK} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}y`} />
+                      <CartesianGrid vertical={false} stroke={CHART_GRID_STROKE} />
+                      <XAxis dataKey="year" stroke={CHART_AXIS_STROKE} tick={CHART_AXIS_TICK} tickLine={false} axisLine={false} interval="preserveStartEnd" tickFormatter={(v) => `${v}y`} />
                       <YAxis stroke={CHART_AXIS_STROKE} tick={CHART_AXIS_TICK} tickLine={false} axisLine={false} width={60} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
                       <Tooltip
                         contentStyle={CHART_TOOLTIP_STYLE}
@@ -291,8 +291,8 @@ export default function PortfolioSimulatorPage() {
                         formatter={(value, name) => [fc(value), name === 'balance' ? 'Balance' : 'Invested']}
                         labelFormatter={(v) => `Year ${v}`}
                       />
-                      <Area type="monotone" dataKey="invested" stackId="1" fill="hsl(var(--muted))" stroke="hsl(var(--muted-foreground))" fillOpacity={0.3} name="invested" />
-                      <Area type="monotone" dataKey="balance" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" fillOpacity={0.15} name="balance" />
+                      <Area type="monotone" dataKey="invested" stackId="1" fill="hsl(var(--muted-foreground))" stroke="hsl(var(--muted-foreground))" fillOpacity={0.12} strokeWidth={1.25} name="invested" />
+                      <Area type="monotone" dataKey="balance" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" fillOpacity={0.14} strokeWidth={1.75} name="balance" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -312,25 +312,25 @@ export default function PortfolioSimulatorPage() {
               <CardContent className="space-y-6">
                 {/* Summary Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                  <div className="p-3 bg-red-50 rounded-lg text-center">
+                  <div className="p-3 bg-red-50 rounded-2xl text-center">
                     <p className="text-xs text-muted-foreground">Worst (5th)</p>
-                    <p className="font-semibold text-red-600">{fc(monteCarloResult.summary.worst_case)}</p>
+                    <p className="money text-lg text-red-600 mt-1">{fc(monteCarloResult.summary.worst_case)}</p>
                   </div>
-                  <div className="p-3 bg-amber-50 rounded-lg text-center">
+                  <div className="p-3 bg-amber-50 rounded-2xl text-center">
                     <p className="text-xs text-muted-foreground">10th Percentile</p>
-                    <p className="font-semibold text-amber-600">{fc(monteCarloResult.summary.p10)}</p>
+                    <p className="money text-lg text-amber-700 mt-1">{fc(monteCarloResult.summary.p10)}</p>
                   </div>
-                  <div className="p-3 bg-blue-50 rounded-lg text-center">
+                  <div className="p-3 bg-primary/10 rounded-2xl text-center">
                     <p className="text-xs text-muted-foreground">Median (50th)</p>
-                    <p className="font-semibold text-blue-600">{fc(monteCarloResult.summary.median)}</p>
+                    <p className="money text-lg text-primary mt-1">{fc(monteCarloResult.summary.median)}</p>
                   </div>
-                  <div className="p-3 bg-green-50 rounded-lg text-center">
+                  <div className="p-3 bg-primary/5 rounded-2xl text-center">
                     <p className="text-xs text-muted-foreground">90th Percentile</p>
-                    <p className="font-semibold text-green-600">{fc(monteCarloResult.summary.p90)}</p>
+                    <p className="money money-positive text-lg mt-1">{fc(monteCarloResult.summary.p90)}</p>
                   </div>
-                  <div className="p-3 bg-emerald-50 rounded-lg text-center">
+                  <div className="p-3 bg-primary/10 rounded-2xl text-center">
                     <p className="text-xs text-muted-foreground">Best (95th)</p>
-                    <p className="font-semibold text-emerald-600">{fc(monteCarloResult.summary.best_case)}</p>
+                    <p className="money money-positive text-lg mt-1">{fc(monteCarloResult.summary.best_case)}</p>
                   </div>
                 </div>
 
@@ -344,7 +344,7 @@ export default function PortfolioSimulatorPage() {
                     <p className="text-xs text-muted-foreground">Probability of Profit</p>
                     <p className={cn(
                       "font-semibold",
-                      monteCarloResult.summary.probability_of_profit >= MIN_PROFIT_PROBABILITY ? 'text-green-600' : 'text-amber-600'
+                      monteCarloResult.summary.probability_of_profit >= MIN_PROFIT_PROBABILITY ? 'money-positive' : 'text-amber-600'
                     )}>
                       {monteCarloResult.summary.probability_of_profit}%
                     </p>
@@ -359,8 +359,8 @@ export default function PortfolioSimulatorPage() {
                 <div className="h-[400px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={monteCarloResult.percentile_timeline}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
-                      <XAxis dataKey="year" stroke={CHART_AXIS_STROKE} tick={CHART_AXIS_TICK} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}y`} />
+                      <CartesianGrid vertical={false} stroke={CHART_GRID_STROKE} />
+                      <XAxis dataKey="year" stroke={CHART_AXIS_STROKE} tick={CHART_AXIS_TICK} tickLine={false} axisLine={false} interval="preserveStartEnd" tickFormatter={(v) => `${v}y`} />
                       <YAxis stroke={CHART_AXIS_STROKE} tick={CHART_AXIS_TICK} tickLine={false} axisLine={false} width={60} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
                       <Tooltip
                         contentStyle={CHART_TOOLTIP_STYLE}
@@ -372,11 +372,11 @@ export default function PortfolioSimulatorPage() {
                         }}
                         labelFormatter={(v) => `Year ${v}`}
                       />
-                      <Area type="monotone" dataKey="p10" fill="hsl(15, 45%, 55%)" stroke="none" fillOpacity={0.08} />
-                      <Area type="monotone" dataKey="p25" fill="hsl(45, 40%, 60%)" stroke="none" fillOpacity={0.1} />
-                      <Area type="monotone" dataKey="p75" fill="hsl(150, 30%, 40%)" stroke="none" fillOpacity={0.1} />
-                      <Area type="monotone" dataKey="p90" fill="hsl(150, 30%, 30%)" stroke="none" fillOpacity={0.08} />
-                      <Line type="monotone" dataKey="p50" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={false} />
+                      <Area type="monotone" dataKey="p10" fill="hsl(12, 40%, 62%)" stroke="none" fillOpacity={0.07} />
+                      <Area type="monotone" dataKey="p25" fill="hsl(36, 36%, 62%)" stroke="none" fillOpacity={0.08} />
+                      <Area type="monotone" dataKey="p75" fill="hsl(158, 28%, 42%)" stroke="none" fillOpacity={0.08} />
+                      <Area type="monotone" dataKey="p90" fill="hsl(158, 28%, 32%)" stroke="none" fillOpacity={0.07} />
+                      <Line type="monotone" dataKey="p50" stroke="hsl(var(--primary))" strokeWidth={1.75} dot={false} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>

@@ -20,7 +20,7 @@ export function getRiskColor(riskLevel) {
   switch (riskLevel?.toLowerCase()) {
     case 'low':
     case 'conservative':
-      return 'text-green-600 bg-green-50';
+      return 'text-cyan-800 bg-cyan-50';
     case 'medium':
     case 'moderate':
       return 'text-amber-600 bg-amber-50';
