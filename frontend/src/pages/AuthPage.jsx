@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Separator } from '../components/ui/separator';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Leaf, TrendingUp, Shield, ArrowLeft, Mail, Loader2, KeyRound, Sparkles } from 'lucide-react';
 import { CodeInput, AuthError, DemoCodeBanner } from '../components/AuthComponents';
 
