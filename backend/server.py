@@ -690,7 +690,12 @@ async def _find_or_create_google_user(email: str, name: str, picture: str) -> st
 
 
 def _build_mock_accounts(user_id: str, institution_name: str) -> list:
-    """Build mock bank accounts for Plaid demo."""
+    """Build mock bank accounts for Plaid demo.
+
+    Includes checking/savings (cash) plus a brokerage account so Portfolio
+    auto-detect has mixed asset classes to rebalance against.
+    """
+    now = datetime.now(timezone.utc).isoformat()
     return [
         {
             "account_id": f"acc_{uuid.uuid4().hex[:12]}",
@@ -698,7 +703,7 @@ def _build_mock_accounts(user_id: str, institution_name: str) -> list:
             "institution": institution_name, "type": "checking",
             "balance": 5432.10, "mask": "1234", "is_connected": True,
             "source": "plaid",
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": now,
         },
         {
             "account_id": f"acc_{uuid.uuid4().hex[:12]}",
@@ -706,8 +711,16 @@ def _build_mock_accounts(user_id: str, institution_name: str) -> list:
             "institution": institution_name, "type": "savings",
             "balance": 12500.00, "mask": "5678", "is_connected": True,
             "source": "plaid",
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
+            "created_at": now,
+        },
+        {
+            "account_id": f"acc_{uuid.uuid4().hex[:12]}",
+            "user_id": user_id, "name": "Brokerage / ETFs",
+            "institution": institution_name, "type": "investment",
+            "balance": 28450.00, "mask": "9012", "is_connected": True,
+            "source": "plaid",
+            "created_at": now,
+        },
     ]
 
 
@@ -1803,32 +1816,80 @@ Spending by Category:
 {categories}
 """
 
+async def _call_openai_advisor(system_message: str, user_message: str) -> str:
+    """Call OpenAI (or OpenAI-compatible) chat completions. Raises HTTPException on failure."""
+    api_key = (os.environ.get("OPENAI_API_KEY") or "").strip()
+    if not api_key:
+        logger.warning("OPENAI_API_KEY not set — AI advisor unavailable")
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "AI advisor unavailable: OPENAI_API_KEY not configured. "
+                "Set OPENAI_API_KEY (and optionally OPENAI_BASE_URL / OPENAI_MODEL) to enable."
+            ),
+        )
+
+    try:
+        from openai import AsyncOpenAI
+    except ImportError:
+        logger.warning("openai package not installed — AI advisor unavailable")
+        raise HTTPException(
+            status_code=503,
+            detail="AI advisor unavailable: openai package not installed.",
+        )
+
+    base_url = (os.environ.get("OPENAI_BASE_URL") or "").strip() or None
+    model = (os.environ.get("OPENAI_MODEL") or "gpt-4o-mini").strip()
+    client_kwargs: Dict[str, Any] = {"api_key": api_key}
+    if base_url:
+        client_kwargs["base_url"] = base_url
+
+    client = AsyncOpenAI(**client_kwargs)
+    try:
+        completion = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_message},
+            ],
+            temperature=0.4,
+        )
+    except Exception as e:
+        logger.error(f"OpenAI advisor error: {e}")
+        raise HTTPException(status_code=502, detail="AI provider request failed") from e
+
+    content = (completion.choices[0].message.content or "").strip() if completion.choices else ""
+    if not content:
+        raise HTTPException(status_code=502, detail="AI provider returned an empty response")
+    return content
+
+
 @api_router.post("/advisor/advice")
 async def get_ai_advice(
     advice_request: AIAdviceRequest,
     current_user: dict = Depends(get_current_user)
 ):
-    """Get AI-powered financial advice. Stubs gracefully when LLM deps/keys are missing."""
+    """Get AI-powered financial advice via OpenAI (or compatible). 503 when key missing."""
     profile = await db.financial_profiles.find_one(
         {"user_id": current_user["user_id"]},
         {"_id": 0}
     )
-    
+
     readiness = await get_investment_readiness(current_user)
     spending = await get_spending_summary(current_user)
-    
+
     financial_context = _build_advisor_context(profile, spending, readiness)
-    system_message = _ADVISOR_SYSTEM_MESSAGE
-    api_key = os.environ.get('EMERGENT_LLM_KEY')
-    user_question = advice_request.question or "Please analyze my financial situation and provide personalized investment advice."
+    user_question = advice_request.question or (
+        "Please analyze my financial situation and provide personalized investment advice."
+    )
     full_message = f"{financial_context}\n\nUser Question: {user_question}"
     if advice_request.context:
         full_message += f"\n\nAdditional Context: {advice_request.context}"
 
     snapshot = {
-        "income": (profile or {}).get('income', 0),
-        "safe_to_invest": readiness.get('safe_to_invest', 0),
-        "status": readiness.get('status', 'unknown')
+        "income": (profile or {}).get("income", 0),
+        "safe_to_invest": readiness.get("safe_to_invest", 0),
+        "status": readiness.get("status", "unknown"),
     }
     disclaimer = (
         "IMPORTANT: This advice is generated by AI and is for informational purposes only. "
@@ -1837,52 +1898,24 @@ async def get_ai_advice(
         "decisions. Investing according to this advice is at your own risk."
     )
 
-    try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-    except ImportError:
-        logger.warning("emergentintegrations not installed — AI advisor returning stub response")
-        raise HTTPException(
-            status_code=503,
-            detail="AI advisor unavailable: LLM integration not installed. Set up an AI provider key later.",
-        )
+    response = await _call_openai_advisor(_ADVISOR_SYSTEM_MESSAGE, full_message)
 
-    if not api_key:
-        logger.warning("EMERGENT_LLM_KEY not set — AI advisor stubbed")
-        raise HTTPException(
-            status_code=503,
-            detail="AI advisor unavailable: EMERGENT_LLM_KEY not configured.",
-        )
+    advice_doc = {
+        "advice_id": f"adv_{uuid.uuid4().hex[:12]}",
+        "user_id": current_user["user_id"],
+        "question": advice_request.question,
+        "response": response,
+        "financial_snapshot": snapshot,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.advice_history.insert_one(advice_doc)
 
-    chat = LlmChat(
-        api_key=api_key,
-        session_id=f"advisor_{current_user['user_id']}_{uuid.uuid4().hex[:8]}",
-        system_message=system_message
-    ).with_model("openai", "gpt-4o-mini")
-    
-    try:
-        response = await chat.send_message(UserMessage(text=full_message))
-        
-        advice_doc = {
-            "advice_id": f"adv_{uuid.uuid4().hex[:12]}",
-            "user_id": current_user["user_id"],
-            "question": advice_request.question,
-            "response": response,
-            "financial_snapshot": snapshot,
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-        await db.advice_history.insert_one(advice_doc)
-        
-        return {
-            "advice": response,
-            "disclaimer": disclaimer,
-            "confidence_level": readiness.get('confidence_level', 0.5),
-            "financial_snapshot": snapshot,
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"AI advice error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to generate advice")
+    return {
+        "advice": response,
+        "disclaimer": disclaimer,
+        "confidence_level": readiness.get("confidence_level", 0.5),
+        "financial_snapshot": snapshot,
+    }
 
 @api_router.get("/advisor/history")
 async def get_advice_history(current_user: dict = Depends(get_current_user)):

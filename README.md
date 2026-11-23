@@ -26,7 +26,6 @@ docker compose up -d mongo
 ```bash
 cd backend
 virtualenv .venv && source .venv/bin/activate   # or: python -m venv .venv
-# emergentintegrations is optional (not on public PyPI); requirements skip it
 pip install -r requirements.txt
 cp .env.example .env
 ```
@@ -53,12 +52,14 @@ ENCRYPTION_KEY=<generated>
 COOKIE_SECURE=false
 RESEND_API_KEY=
 SENDER_EMAIL=onboarding@resend.dev
-EMERGENT_LLM_KEY=
+OPENAI_API_KEY=
+OPENAI_BASE_URL=
+OPENAI_MODEL=gpt-4o-mini
 TINK_CLIENT_ID=
 TINK_CLIENT_SECRET=
 ```
 
-Leave Resend / Tink / LLM keys empty for local demo mode (emails log `demo_code`; bank linking uses the built-in demo institutions).
+Leave Resend / Tink / OpenAI keys empty for local demo mode (emails log `demo_code`; bank linking uses the built-in demo institutions; AI advisor returns 503 until `OPENAI_API_KEY` is set).
 
 ```bash
 uvicorn server:app --reload --host 0.0.0.0 --port 8000
@@ -83,9 +84,12 @@ App: `http://localhost:3000`
 
 1. **Auth** — Register → use on-screen / API `demo_code` → verify → JWT session (Bearer + cookie).
 2. **Dashboard** — spending summary + investment readiness + balances.
-3. **Accounts** — Connect Bank → **Demo mode** (mock institutions; Tink needs real keys).
+3. **Accounts** — Connect Bank → **Demo mode** (checking + savings + brokerage; Tink needs real keys).
 4. **Spending** — charts + transactions from demo import or manual add.
 5. **Budgets** — create category budgets and view alerts.
+6. **Portfolio** — auto-detect holdings from demo accounts → drift vs risk tier.
+7. **Simulator** — simple compound or Monte Carlo projections (no external keys).
+8. **AI Advisor** — chat via OpenAI when `OPENAI_API_KEY` is set; otherwise 503 + UI message.
 
 Password rules: ≥8 chars, upper, lower, digit, special.
 
@@ -94,7 +98,7 @@ Password rules: ≥8 chars, upper, lower, digit, special.
 ```bash
 cd backend
 source .venv/bin/activate
-REACT_APP_BACKEND_URL=http://127.0.0.1:8000 pytest tests/test_mvp_auth_core_flows.py -q
+REACT_APP_BACKEND_URL=http://127.0.0.1:8000 pytest tests/test_mvp_auth_core_flows.py tests/test_portfolio_simulator_advisor.py -q
 ```
 
 ## What’s stubbed without paid keys
@@ -103,7 +107,7 @@ REACT_APP_BACKEND_URL=http://127.0.0.1:8000 pytest tests/test_mvp_auth_core_flow
 |-------------|------------------------|
 | Resend email | Codes logged / returned as `demo_code` |
 | Tink Open Banking | `/tink/link` → 503; use Demo bank connect |
-| AI Advisor (`EMERGENT_LLM_KEY` / `emergentintegrations`) | `/advisor/advice` → 503 |
+| AI Advisor (`OPENAI_API_KEY`) | `/advisor/advice` → 503; UI shows unavailable banner |
 | Google OAuth | Still points at Emergent auth host — use email/password locally |
 
 ## Config notes

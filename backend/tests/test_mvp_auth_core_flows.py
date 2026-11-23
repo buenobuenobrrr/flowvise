@@ -128,5 +128,7 @@ def test_ai_advisor_stubs_without_key(session_user):
         json={"question": "Should I invest?"},
         timeout=15,
     )
-    # Without emergentintegrations / key, expect graceful 503
+    # Without OPENAI_API_KEY, expect graceful 503
     assert r.status_code == 503, r.text
+    detail = r.json().get("detail", "")
+    assert "OPENAI_API_KEY" in detail
